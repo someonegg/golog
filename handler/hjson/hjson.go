@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"sync"
+	"time"
 
 	. "github.com/someonegg/golog"
 )
@@ -19,11 +20,22 @@ var Default = New(os.Stderr)
 
 type handler struct {
 	mu sync.Mutex
+	tf string //time format
 	ec *json.Encoder
 }
 
+// New handler, outputting to w.
 func New(w io.Writer) Handler {
 	return &handler{
+		tf: time.RFC3339,
+		ec: json.NewEncoder(w),
+	}
+}
+
+// New handler, outputting to w, with the timeformat.
+func New2(w io.Writer, timeformat string) Handler {
+	return &handler{
+		tf: timeformat,
 		ec: json.NewEncoder(w),
 	}
 }
@@ -32,7 +44,7 @@ func (h *handler) ProcessLog(l *Log) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	l.Fields["level"] = LevelName[l.Level]
-	l.Fields["time"] = l.Time
+	l.Fields["time"] = l.Time.Format(h.tf)
 	l.Fields["message"] = l.Message
 	h.ec.Encode(l.Fields)
 	delete(l.Fields, "level")
