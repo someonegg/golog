@@ -11,8 +11,8 @@ Documentation
 Installation
 ------------
 
-Install Bdmsg using the "go get" command:
+Install golog using the "go get" command:
 
     go get github.com/someonegg/golog
 
-The Go distribution is Bdmsg's only dependency.
+The Go distribution is golog's only dependency.
